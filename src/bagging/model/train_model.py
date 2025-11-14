@@ -1,15 +1,15 @@
-import DATASETS
+from data import load_dataset
+from models import load_models
 from river import metrics
 
-from bagging.data import DATASET
-from models.models import MODELS
+DATASET = load_dataset()
+MODELS = load_models()
 
 
-def main():
+def train_model(plot_every_n_steps: int = 100):
     metrics_dict = {name: metrics.Accuracy() for name in MODELS.keys()}
 
     performance_history = {name: [] for name in MODELS.keys()}
-    plot_every_n_steps = 100
 
     for i, (x, y) in enumerate(DATASET):
         for model_name, model in MODELS.items():
@@ -25,6 +25,4 @@ def main():
                 accuracy = metrics_dict[model_name].get()
                 performance_history[model_name].append(accuracy)
 
-        print("Итоговая точность:")
-        for model_name, metric in metrics_dict.items():
-            print(f"  - {model_name}: {metric.get():.4f}")
+    return metrics_dict, performance_history
